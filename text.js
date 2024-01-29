@@ -1,221 +1,145 @@
-const rock = document.querySelector("#rock");
-const paper = document.querySelector("#paper");
-const scissors = document.querySelector("#scissors");
-const userScoreValue = document.querySelector("#userScore");
-const computerScoreValue = document.querySelector("#computerScore");
-const gameScreen = document.querySelector(".game_screen");
-const resultScreen = document.querySelector(".result_screen");
-const ruleButton = document.querySelector(".rule_btn");
-const ruleWrapper = document.querySelector(".rule_wrapper");
-const ruleBoxCloseButton = document.querySelector(".close_btn");
-const playAgain = document.querySelector("#play");
-const mobilePlayButton = document.querySelector("#mobile_play");
-const nextButton = document.querySelector("#next_btn");
-const userPick = document.querySelector("#user");
-const computerPick = document.querySelector("#computer");
-const resultText = document.querySelector("#winner");
-const mobileResultText = document.querySelector("#mobile_winner");
-const userChoiceImage = document.querySelector("#userPickImage");
-const computerChoiceImage = document.querySelector("#computerChoiceImage");
-const userwiningIndicator = document.querySelector("#userwiningIndicator");
-const computerwiningIndicator = document.querySelector(
-  "#computerwiningIndicator"
-);
-
-console.log("mobileplayButton", mobilePlayButton);
-console.log("mobileResultText", mobileResultText);
-
-var userChoice;
-var computerChoice;
-
-let userScore = localStorage.getItem("userScore") || 0;
-let computerScore = localStorage.getItem("computerScore") || 0;
-
-userScoreValue.textContent = userScore;
-computerScoreValue.textContent = computerScore;
-
-const generateComputerChoice = () => {
-  const choices = ["rock", "paper", "scissors"];
-  const randomIndex = Math.floor(Math.random() * choices.length);
-  return choices[randomIndex];
-};
-
-window.onload = function () {
-  resultScreen.style.display = "none";
-  gameScreen.style.display = "block";
-
-  userPick.classList.remove(`${userChoice}`);
-  userChoiceImage.src = "";
-
-  computerChoiceImage.src = "";
-  computerPick.classList.remove(`${computerChoice}`);
-
-  playAgain.textContent = "PLAY AGAIN";
-  userChoice = "";
-  computerChoice = "";
-
-  userwiningIndicator.style.display = "none";
-  computerwiningIndicator.style.display = "none";
-};
-
-playAgain.addEventListener("click", () => {
-  resultScreen.style.display = "none";
-  gameScreen.style.display = "block";
-
-  userPick.classList.remove(`${userChoice}`);
-  userChoiceImage.src = "";
-
-  computerChoiceImage.src = "";
-  computerPick.classList.remove(`${computerChoice}`);
-
-  playAgain.textContent = "PLAY AGAIN";
-  userChoice = "";
-  computerChoice = "";
-
-  userwiningIndicator.style.display = "none";
-  computerwiningIndicator.style.display = "none";
-});
-
-mobilePlayButton.addEventListener("click", () => {
-  resultScreen.style.display = "none";
-  gameScreen.style.display = "block";
-
-  userPick.classList.remove(`${userChoice}`);
-  userChoiceImage.src = "";
-
-  computerChoiceImage.src = "";
-  computerPick.classList.remove(`${computerChoice}`);
-
-  playAgain.textContent = "PLAY AGAIN";
-  userChoice = "";
-  computerChoice = "";
-
-  userwiningIndicator.style.display = "none";
-  computerwiningIndicator.style.display = "none";
-});
+let showbutton = document.querySelector(".Rulesbutton");
+let rule = document.querySelector(".gamesrules");
+let btn = document.querySelector(".close");
 
 let isRuleBoxOpen = true;
-ruleButton.addEventListener("click", () => {
-  if (!isRuleBoxOpen) {
-    ruleWrapper.style.display = "flex";
-  }
-});
 
-ruleBoxCloseButton.addEventListener("click", () => {
-  ruleWrapper.style.display = "none";
+// Event listener for the close button
+btn.addEventListener("click", () => {
+  rule.style.display = "none";
   isRuleBoxOpen = false;
 });
 
-rock.addEventListener("click", () => {
-  userChoice = rock.dataset.value;
-  userPick.classList.add(`${userChoice}`);
-  userChoiceImage.src = `assets/${userChoice}.png`;
+// Event listener for the show rules button
+showbutton.addEventListener("click", () => {
+  rule.style.display = "block";
+  isRuleBoxOpen = true;
+});
+// ----------------------------------------------------------------------
+// // script.js
+// let circle1 = document.getElementsByClassName(".circle-1");
+// let circle2 = document.getElementsByClassName(".circle-2");
+// let circle3 = document.querySelector(".circle-3");
+// let circle4 = document.querySelector(".circle-4");
+// let circle5 = document.querySelector(".circle-5");
+// let circle6 = document.querySelector(".circle-6");
 
-  gameScreen.style.display = "none";
-  resultScreen.style.display = "block";
+document.addEventListener("DOMContentLoaded", function () {
+  // Get necessary elements from the DOM
+  const userChoices = document.querySelectorAll(".gamesection [data-value]");
+  const playAgainBtn = document.getElementById("play-again");
+  const scoreElement1 = document.querySelector(".score1");
+  const scoreElement2 = document.querySelector(".score2");
 
-  computerChoice = generateComputerChoice();
-  computerChoiceImage.src = `assets/${computerChoice}.png`;
-  computerPick.classList.add(`${computerChoice}`);
+  let userScore = 0;
+  let computerScore = 0;
 
-  if (userChoice === "rock" && computerChoice === "scissors") {
-    userScore++;
-    localStorage.setItem("userScore", `${userScore}`);
-    userScoreValue.textContent = userScore;
-    nextButton.style.display = "flex";
-    resultText.textContent = "YOU WIN";
-    mobileResultText.textContent = "YOU WIN";
-    userwiningIndicator.style.display = "flex";
-  } else if (userChoice === computerChoice) {
-    console.log("it' tie play again");
-    resultText.textContent = "TIE UP";
-    mobileResultText.textContent = "TIE UP";
-    playAgain.textContent = "REPLAY";
-    mobilePlayButton.textContent = "REPLAY";
-  } else {
-    console.log("computer wins");
-    computerScore++;
-    localStorage.setItem("computerScore", `${computerScore}`);
-    computerScoreValue.textContent = computerScore;
-    nextButton.style.display = "none";
-    resultText.textContent = "YOU LOST";
-    mobileResultText.textContent = "YOU LOST";
-    computerwiningIndicator.style.display = "flex";
+  // Event listeners for user choices
+  userChoices.forEach((choice) => {
+    choice.addEventListener("click", function () {
+      const userChoice = this.getAttribute("data-value");
+      const computerChoice = getComputerChoice();
+      const result = determineWinner(userChoice, computerChoice);
+
+      displayResult(userChoice, computerChoice, result);
+      updateScores(result);
+    });
+  });
+
+  // Event listener for play again button
+  playAgainBtn.addEventListener("click", function () {
+    resetGame();
+  });
+
+  // Function to get the computer's choice
+  function getComputerChoice() {
+    const choices = ["fist", "scissor", "hand"];
+    const randomIndex = Math.floor(Math.random() * 3);
+    return choices[randomIndex];
+  }
+
+  // Function to determine the winner
+  let circle1 = document.getElementsByClassName(".circle-1");
+  let circle2 = document.getElementsByClassName(".circle-2");
+  let circle3 = document.querySelector(".circle-3");
+  let circle4 = document.querySelector(".circle-4");
+  let circle5 = document.querySelector(".circle-5");
+  let circle6 = document.querySelector(".circle-6");
+  let nextbutton = document.querySelector("#nextbtn");
+  function determineWinner(user, computer) {
+    if (user === computer) {
+      return "draw";
+    } else if (
+      (user === "fist" && computer === "scissor") ||
+      (user === "scissor" && computer === "hand") ||
+      (user === "hand" && computer === "fist")
+    ) {
+      return "win";
+    } else {
+      return "lose";
+    }
+  }
+
+  // Function to display the result on the page
+  function displayResult(user, computer, result) {
+    const userDisplay = document.querySelector(
+      ".resultsection .user #fist img"
+    );
+    const computerDisplay = document.querySelector(
+      ".resultsection .computer #hand img"
+    );
+
+    userDisplay.src = `${user}.png`;
+    computerDisplay.src = `${computer}.png`;
+
+    const winnerDisplay = document.querySelector("#you-win");
+    const againstPCDisplay = document.querySelector("#against-pc");
+
+    if (result === "win") {
+      winnerDisplay.textContent = "YOU WIN";
+      againstPCDisplay.textContent = "AGAINST PC";
+      circle1.classList.add("circle-1");
+      nextbutton.style.display = "flex";
+    } else if (result === "lose") {
+      winnerDisplay.textContent = "YOU LOSE";
+      againstPCDisplay.textContent = "AGAINST PC";
+      circle4.style.animation = "animate 2s infinite linear";
+      circle5.style.animation = "animate 2s infinite linear";
+      circle6.style.animation = "animate 2s infinite linear";
+    } else {
+      winnerDisplay.textContent = "TIE UP";
+      againstPCDisplay.textContent = "";
+    }
+
+    // Show the result section
+    document.querySelector(".gamesection").style.display = "none";
+    document.querySelector(".resultsection").style.display = "flex";
+  }
+
+  // Function to update scores and display them
+  function updateScores(result) {
+    if (result === "win") {
+      userScore++;
+    } else if (result === "lose") {
+      computerScore++;
+    }
+
+    scoreElement1.textContent = userScore;
+    scoreElement2.textContent = computerScore;
+  }
+
+  // Function to reset the game
+  function resetGame() {
+    // Hide the result section and show the game section
+    document.querySelector(".gamesection").style.display = "flex";
+    document.querySelector(".resultsection").style.display = "none";
+
+    // Reset scores
+    userScore = 0;
+    computerScore = 0;
+    scoreElement1.textContent = "0";
+    scoreElement2.textContent = "0";
   }
 });
 
-paper.addEventListener("click", () => {
-  userChoice = paper.dataset.value;
-  userPick.classList.add(`${userChoice}`);
-  userChoiceImage.src = `assets/${userChoice}.png`;
-
-  gameScreen.style.display = "none";
-  resultScreen.style.display = "block";
-
-  computerChoice = generateComputerChoice();
-  computerChoiceImage.src = `assets/${computerChoice}.png`;
-  computerPick.classList.add(`${computerChoice}`);
-
-  if (userChoice === "paper" && computerChoice === "rock") {
-    userScore++;
-    localStorage.setItem("userScore", `${userScore}`);
-    userScoreValue.textContent = userScore;
-    nextButton.style.display = "flex";
-    resultText.textContent = "YOU WIN";
-    mobileResultText.textContent = "YOU WIN";
-    userwiningIndicator.style.display = "flex";
-  } else if (userChoice === computerChoice) {
-    console.log("it' tie play again");
-    resultText.textContent = "TIE UP";
-    mobileResultText.textContent = "TIE UP";
-    playAgain.textContent = "REPLAY";
-    mobilePlayButton.textContent = "REPLAY";
-  } else {
-    console.log("computer wins");
-    computerScore++;
-    localStorage.setItem("computerScore", `${computerScore}`);
-    computerScoreValue.textContent = computerScore;
-    nextButton.style.display = "none";
-    resultText.textContent = "YOU LOST";
-    mobileResultText.textContent = "YOU LOST";
-    computerwiningIndicator.style.display = "flex";
-  }
-});
-
-scissors.addEventListener("click", () => {
-  userChoice = scissors.dataset.value;
-  userPick.classList.add(`${userChoice}`);
-  userChoiceImage.src = `assets/${userChoice}.png`;
-
-  gameScreen.style.display = "none";
-  resultScreen.style.display = "block";
-
-  computerChoice = generateComputerChoice();
-  computerChoiceImage.src = `assets/${computerChoice}.png`;
-  computerPick.classList.add(`${computerChoice}`);
-
-  if (userChoice === "scissors" && computerChoice === "paper") {
-    userScore++;
-    localStorage.setItem("userScore", `${userScore}`);
-    userScoreValue.textContent = userScore;
-    nextButton.style.display = "flex";
-    resultText.textContent = "YOU WIN";
-    mobileResultText.textContent = "YOU WIN";
-    userwiningIndicator.style.display = "flex";
-  } else if (userChoice === computerChoice) {
-    console.log("it' tie play again");
-    resultText.textContent = "TIE UP";
-    mobileResultText.textContent = "TIE UP";
-    playAgain.textContent = "REPLAY";
-    mobilePlayButton.textContent = "REPLAY";
-  } else {
-    console.log("computer wins");
-    computerScore++;
-    localStorage.setItem("computerScore", `${computerScore}`);
-    computerScoreValue.textContent = computerScore;
-    nextButton.style.display = "none";
-    resultText.textContent = "YOU LOST";
-    mobileResultText.textContent = "YOU LOST";
-    computerwiningIndicator.style.display = "flex";
-  }
-});
+// ------------------------------------------------------------------------------animation-------------------------------------
